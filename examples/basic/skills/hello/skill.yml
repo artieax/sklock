@@ -1,0 +1,6 @@
+id: hello
+name: Hello Skill
+description: A sample skill with no dependencies
+requires: []
+tags:
+  - example
