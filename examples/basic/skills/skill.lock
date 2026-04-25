@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "generatedAt": "2026-04-25T10:26:36.740Z",
+  "skills": {
+    "hello": {
+      "id": "hello",
+      "path": "hello",
+      "hash": "be37ed0d4f5ad217",
+      "requires": []
+    }
+  }
+}
