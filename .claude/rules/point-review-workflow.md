@@ -37,3 +37,25 @@ grep -r "\.oldFieldName" src/ tests/
 - examples workspace: `tests/examples-workspaces.test.ts`（on-disk との比較あり）
 
 examples-workspaces テストが失敗した場合は `npm run generate-examples` または類似コマンドで lockfile を再生成する。
+
+## スキーマ検証 regex 変更時のフィクスチャ更新
+
+ハッシュ形式を変更するとき（例: 短縮 hex → `sha256:<64hex>`）、スキーマ regex が厳密になると
+テストフィクスチャ内のプレースホルダー値（`"changed"` 等）が新 regex に引っかかり複数テストが落ちる。
+
+```bash
+# テストファイル内のハッシュプレースホルダーを一括検索
+grep -r '"changed"' tests/
+grep -r 'sha256:' tests/
+```
+
+- テストで使うフィクスチャハッシュは形式合法な偽ハッシュ（64文字 hex）に揃える
+- `check.test.ts` はとくに旧形式プレースホルダーが残りやすい（session 9362ffc3 で実例）
+
+## lockfile 再生成時の generatedBy 不一致
+
+`npm run generate-examples` など CLI 経由で lockfile を生成すると、
+プログラマティック API が含めない `generatedBy` メタデータフィールドが追加される場合がある。
+テストがプログラマティック API の出力と disk ファイルを比較していると不一致で失敗する。
+
+対応: `generatedBy` 無しで再生成するか、テストの比較対象から `generatedBy` を除外する。
