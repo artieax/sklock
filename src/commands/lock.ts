@@ -1,3 +1,6 @@
+import { readFileSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { scanSkills } from "../core/scanner.js";
 import { generateLockfile, writeLockfile } from "../core/lockfile.js";
 import { validateSkills } from "../core/validator.js";
@@ -8,6 +11,16 @@ interface LockOptions {
   json?: boolean;
 }
 
+function readSklockVersion(): string | undefined {
+  try {
+    const dir = path.dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(readFileSync(path.resolve(dir, "../package.json"), "utf-8")) as { version?: string };
+    return typeof pkg.version === "string" ? pkg.version : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function lockCommand(options: LockOptions): Promise<void> {
   const root = resolveWorkspaceRoot(options.root);
   const { skills, warnings } = await scanSkills(root);
@@ -16,7 +29,9 @@ export async function lockCommand(options: LockOptions): Promise<void> {
   }
   exitOnValidationErrors(validateSkills(skills), "write skill.lock", { json: options.json });
 
-  const lockfile = await generateLockfile(skills, root);
+  const version = readSklockVersion();
+  const generatedBy = version ? { name: "sklock", version } : undefined;
+  const lockfile = await generateLockfile(skills, root, { generatedBy });
   await writeLockfile(lockfile, root);
 
   if (options.json) {

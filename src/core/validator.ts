@@ -10,6 +10,36 @@ export interface ValidationResult {
   errors: ValidationError[];
 }
 
+/**
+ * Checks Agent Skills spec compliance beyond schema parsing:
+ * - description is required
+ * - metadata values must all be strings
+ *
+ * Returns errors to be merged into the caller's result set.
+ */
+export function validateSkillsStrict(skills: DiscoveredSkill[]): ValidationError[] {
+  const errors: ValidationError[] = [];
+  for (const skill of skills) {
+    if (!skill.description) {
+      errors.push({
+        skillId: skill.id,
+        message: "Agent Skills spec requires description (missing in frontmatter)",
+      });
+    }
+    if (skill.metadata) {
+      for (const [key, val] of Object.entries(skill.metadata)) {
+        if (typeof val !== "string") {
+          errors.push({
+            skillId: skill.id,
+            message: `metadata.${key} must be a string per Agent Skills spec (got ${typeof val})`,
+          });
+        }
+      }
+    }
+  }
+  return errors;
+}
+
 export function validateSkills(skills: DiscoveredSkill[]): ValidationResult {
   const errors: ValidationError[] = [];
   const idToFirstPath = new Map<string, string>();

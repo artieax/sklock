@@ -11,6 +11,10 @@ export const LockEntrySchema = z.object({
 
 export const LockfileSchema = z.object({
   version: z.string().default("1"),
+  generatedBy: z.object({
+    name: z.string(),
+    version: z.string(),
+  }).optional(),
   skills: z.record(z.string(), LockEntrySchema),
 }).superRefine((lockfile, ctx) => {
   for (const [key, entry] of Object.entries(lockfile.skills)) {

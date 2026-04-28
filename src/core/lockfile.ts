@@ -147,7 +147,8 @@ export async function hashSkillDirectory(skillPath: string): Promise<string> {
 
 export async function generateLockfile(
   skills: DiscoveredSkill[],
-  root: string
+  root: string,
+  options?: { generatedBy?: { name: string; version: string } }
 ): Promise<Lockfile> {
   const hashes = await Promise.all(skills.map((skill) => hashSkillDirectory(skill.path)));
   const entries: Record<string, LockEntry> = {};
@@ -169,7 +170,9 @@ export async function generateLockfile(
     skillsSorted[key] = entries[key];
   }
 
-  return { version: "1", skills: skillsSorted };
+  const result: Lockfile = { version: "1", skills: skillsSorted };
+  if (options?.generatedBy) result.generatedBy = options.generatedBy;
+  return result;
 }
 
 export async function writeLockfile(lockfile: Lockfile, root: string): Promise<void> {

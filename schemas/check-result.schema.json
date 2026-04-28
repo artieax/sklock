@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CheckResult",
+  "description": "Output schema for `sklock check --json`",
+  "type": "object",
+  "required": ["stale", "added", "removed", "changed"],
+  "properties": {
+    "stale": {
+      "type": "boolean",
+      "description": "True when the lockfile does not match the current workspace"
+    },
+    "missingLockfile": {
+      "type": "boolean",
+      "description": "True when no skill.lock was found (implies stale: true)"
+    },
+    "added": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Skill IDs present in the workspace but not in the lockfile"
+    },
+    "removed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Skill IDs present in the lockfile but no longer in the workspace"
+    },
+    "changed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Skill IDs whose lockfile entry differs from the current workspace state"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "skillId", "parentId", "skillMdPath", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "skillId": { "type": "string" },
+          "parentId": { "type": "string" },
+          "skillMdPath": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "description": "Non-fatal scan warnings (e.g. orphan parent references)"
+    }
+  }
+}

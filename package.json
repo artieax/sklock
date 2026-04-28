@@ -14,6 +14,22 @@
   "bin": {
     "sklock": "dist/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artieax/sklock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/artieax/sklock/issues"
+  },
+  "homepage": "https://github.com/artieax/sklock#readme",
+  "keywords": [
+    "agent-skills",
+    "ai-agents",
+    "skills",
+    "lockfile",
+    "dependency-graph",
+    "cli"
+  ],
   "files": [
     "dist",
     "schemas",

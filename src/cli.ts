@@ -16,6 +16,7 @@ import { explainCommand } from "./commands/explain.js";
 import { exportCommand } from "./commands/export.js";
 import { lintCommand, DEFAULT_MAX_LINES } from "./commands/lint.js";
 import { addCommand } from "./commands/add.js";
+import { doctorCommand } from "./commands/doctor.js";
 import { runCommand } from "./commands/shared.js";
 
 function readPackageVersion(): string {
@@ -63,6 +64,7 @@ export function createSklockCli(): CAC {
     .option("--json", "Output as JSON")
     .option("--verbose", "Verbose output")
     .option("--quiet", "Suppress output")
+    .option("--strict", "Enforce Agent Skills spec compliance (description required, metadata string values)")
     .action((options) => {
       runCommand(() => validateCommand(options));
     });
@@ -153,6 +155,14 @@ export function createSklockCli(): CAC {
     .option("--dep <skill-id>", "Dependency skill ID to add to requires[]")
     .action((skillId, options) => {
       runCommand(() => addCommand(skillId, options));
+    });
+
+  cli
+    .command("doctor", "Run a full workspace health check")
+    .option("--root <path>", "Path to skills directory")
+    .option("--json", "Output as JSON")
+    .action((options) => {
+      runCommand(() => doctorCommand(options));
     });
 
   cli.help();
