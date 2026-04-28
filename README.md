@@ -18,7 +18,7 @@ AI agent skill trees grow complex fast. Without a lockfile:
 - CI has no way to detect drift or missing skills
 - Refactoring is guesswork — "what depends on this skill?"
 
-`skill.lock` is the reproducibility snapshot: every discovered skill, a hash of **all files under that skill’s directory** (not only `SKILL.md`), its parent skill, and its resolved `requires` — so CI can verify the exact state of your workspace.
+`skill.lock` is the reproducibility snapshot: every discovered skill with two hashes — `contentHash` (the skill’s own files only, excluding sub-skills) and `closureHash` (the full subtree including all descendant sub-skills) — plus parent and resolved `requires`. A top-level `workspaceHash` lets CI verify the entire workspace with a single value.
 
 ## Install
 
@@ -275,6 +275,27 @@ Re-run `sklock lock` whenever you:
 | `Circular dependency: A → B → A` | Remove one of the `requires` entries to break the cycle |
 | `skill.lock is stale` | Run `sklock lock` and commit the updated lockfile |
 | `Warning: invalid SKILL.md at ...` | Check the frontmatter is valid YAML and the file starts with `---` |
+
+## Validation modes
+
+sklock is permissive by default so it works with any existing workspace. Use `--strict` to enforce the Agent Skills specification:
+
+| | Default | `--strict` |
+|---|---|---|
+| `description` | optional | **required** |
+| `metadata` values | any type | strings only |
+
+```yaml
+# validate workspace against the Agent Skills spec
+sklock validate --strict
+```
+
+In CI, combine both checks:
+
+```yaml
+- run: sklock validate --strict
+- run: sklock check --frozen
+```
 
 ## CI integration
 

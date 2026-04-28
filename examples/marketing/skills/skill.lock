@@ -1,10 +1,16 @@
 {
   "version": "1",
+  "generatedBy": {
+    "name": "sklock",
+    "version": "0.2.0"
+  },
+  "workspaceHash": "sha256:be472834880f316c00bc4f1c889ca42ab32ebde37619639107681e09fdae8a01",
   "skills": {
     "caption-writer": {
       "id": "caption-writer",
       "path": "social-campaign/skills/caption-writer",
-      "hash": "sha256:46d2365d2a067e3c42367f62ced729ac1c656ec38e07e018922b5d4c405ea406",
+      "contentHash": "sha256:46d2365d2a067e3c42367f62ced729ac1c656ec38e07e018922b5d4c405ea406",
+      "closureHash": "sha256:46d2365d2a067e3c42367f62ced729ac1c656ec38e07e018922b5d4c405ea406",
       "requires": [],
       "version": "0.3.0",
       "parent": "social-campaign"
@@ -12,14 +18,16 @@
     "copy-review": {
       "id": "copy-review",
       "path": "copy-review",
-      "hash": "sha256:49724749b79611a2853b40de96bde6faf943aa925ee8064a3a01f40c14cf074a",
+      "contentHash": "sha256:49724749b79611a2853b40de96bde6faf943aa925ee8064a3a01f40c14cf074a",
+      "closureHash": "sha256:49724749b79611a2853b40de96bde6faf943aa925ee8064a3a01f40c14cf074a",
       "requires": [],
       "version": "0.4.0"
     },
     "email-campaign": {
       "id": "email-campaign",
       "path": "email-campaign",
-      "hash": "sha256:0812c2b9c58dcc262b6b26a35614f01f5bdd01cdb67c233475bb7aea34370da7",
+      "contentHash": "sha256:5b177007729d774a3f7838c99831950ca0e936372155cabd24c44196fe405f65",
+      "closureHash": "sha256:0812c2b9c58dcc262b6b26a35614f01f5bdd01cdb67c233475bb7aea34370da7",
       "requires": [
         "copy-review",
         "send-email"
@@ -29,7 +37,8 @@
     "hashtag-generator": {
       "id": "hashtag-generator",
       "path": "social-campaign/skills/hashtag-generator",
-      "hash": "sha256:4a47a53a5f0254d2dffced5bcb4c49e25318ee7279889df0688f298d341710b0",
+      "contentHash": "sha256:4a47a53a5f0254d2dffced5bcb4c49e25318ee7279889df0688f298d341710b0",
+      "closureHash": "sha256:4a47a53a5f0254d2dffced5bcb4c49e25318ee7279889df0688f298d341710b0",
       "requires": [],
       "version": "0.1.0",
       "parent": "social-campaign"
@@ -37,21 +46,24 @@
     "scheduler": {
       "id": "scheduler",
       "path": "scheduler",
-      "hash": "sha256:87c4f570ae49e029c7deb6e5d4177568dab73a9681a72ec310533cdba9f1f9a8",
+      "contentHash": "sha256:87c4f570ae49e029c7deb6e5d4177568dab73a9681a72ec310533cdba9f1f9a8",
+      "closureHash": "sha256:87c4f570ae49e029c7deb6e5d4177568dab73a9681a72ec310533cdba9f1f9a8",
       "requires": [],
       "version": "0.9.0"
     },
     "send-email": {
       "id": "send-email",
       "path": "send-email",
-      "hash": "sha256:cda9e8079dc58bc880c05dea7d71b189986eedb38fb660d259452507549feef3",
+      "contentHash": "sha256:cda9e8079dc58bc880c05dea7d71b189986eedb38fb660d259452507549feef3",
+      "closureHash": "sha256:cda9e8079dc58bc880c05dea7d71b189986eedb38fb660d259452507549feef3",
       "requires": [],
       "version": "1.0.0"
     },
     "social-campaign": {
       "id": "social-campaign",
       "path": "social-campaign",
-      "hash": "sha256:865749850cd396fb8ee203edaafb7ca694107c23a893461cf3714cd17430b26d",
+      "contentHash": "sha256:0a55c4d631d91dd668c28e462ecad1b167ae50ccdbdd0ef303134c4aa83b4b72",
+      "closureHash": "sha256:865749850cd396fb8ee203edaafb7ca694107c23a893461cf3714cd17430b26d",
       "requires": [
         "copy-review",
         "scheduler"
@@ -61,7 +73,8 @@
     "subject-writer": {
       "id": "subject-writer",
       "path": "email-campaign/skills/subject-writer",
-      "hash": "sha256:814b611f8261847e1c070e2f8a9dd036d1497023eea3dcd3495d1ef903c199c1",
+      "contentHash": "sha256:814b611f8261847e1c070e2f8a9dd036d1497023eea3dcd3495d1ef903c199c1",
+      "closureHash": "sha256:814b611f8261847e1c070e2f8a9dd036d1497023eea3dcd3495d1ef903c199c1",
       "requires": [],
       "version": "0.2.0",
       "parent": "email-campaign"

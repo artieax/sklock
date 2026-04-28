@@ -120,22 +120,16 @@ async function readSklockIgnore(skillPath: string): Promise<string[]> {
   }
 }
 
-/**
- * Stable hash of everything under the skill directory (SKILL.md plus scripts,
- * references, assets, etc.). Paths are normalized to forward slashes.
- * Respects .sklockignore patterns (gitignore-style) in the skill directory.
- * Returns a full SHA-256 digest prefixed with "sha256:".
- */
-export async function hashSkillDirectory(skillPath: string): Promise<string> {
+async function hashDirectory(skillPath: string, extraIgnorePatterns: string[]): Promise<string> {
   const resolvedRoot = path.resolve(skillPath);
-  const extraIgnore = await readSklockIgnore(resolvedRoot);
+  const sklockIgnore = await readSklockIgnore(resolvedRoot);
   const files = (
     await fg("**/*", {
       cwd: resolvedRoot,
       absolute: true,
       onlyFiles: true,
       followSymbolicLinks: false,
-      ignore: ["**/node_modules/**", "**/.git/**", "skill.lock", ...extraIgnore],
+      ignore: ["**/node_modules/**", "**/.git/**", "skill.lock", ...extraIgnorePatterns, ...sklockIgnore],
       dot: true,
     })
   )
@@ -161,19 +155,33 @@ export async function hashSkillDirectory(skillPath: string): Promise<string> {
   return `sha256:${h.digest("hex")}`;
 }
 
+/** Hash of this skill's own files only — excludes nested skills/ subdirectory. */
+export function hashSkillContent(skillPath: string): Promise<string> {
+  return hashDirectory(skillPath, ["skills/**"]);
+}
+
+/** Hash of the full skill closure — this skill plus all descendant sub-skills. */
+export function hashSkillClosure(skillPath: string): Promise<string> {
+  return hashDirectory(skillPath, []);
+}
+
 export async function generateLockfile(
   skills: DiscoveredSkill[],
   root: string,
   options?: { generatedBy?: { name: string; version: string } }
 ): Promise<Lockfile> {
-  const hashes = await Promise.all(skills.map((skill) => hashSkillDirectory(skill.path)));
+  const [contentHashes, closureHashes] = await Promise.all([
+    Promise.all(skills.map((skill) => hashSkillContent(skill.path))),
+    Promise.all(skills.map((skill) => hashSkillClosure(skill.path))),
+  ]);
   const entries: Record<string, LockEntry> = {};
   for (let i = 0; i < skills.length; i++) {
     const skill = skills[i]!;
     const entry: LockEntry = {
       id: skill.id,
       path: lockRelativePath(root, skill.path),
-      hash: hashes[i]!,
+      contentHash: contentHashes[i]!,
+      closureHash: closureHashes[i]!,
       requires: skill.requires ?? [],
     };
     if (skill.version) entry.version = skill.version;
@@ -183,12 +191,22 @@ export async function generateLockfile(
 
   const skillsSorted: Record<string, LockEntry> = {};
   for (const key of Object.keys(entries).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))) {
-    skillsSorted[key] = entries[key];
+    skillsSorted[key] = entries[key]!;
   }
 
-  const result: Lockfile = { version: "1", skills: skillsSorted };
-  if (options?.generatedBy) result.generatedBy = options.generatedBy;
-  return result;
+  const wh = createHash("sha256");
+  for (const key of Object.keys(skillsSorted)) {
+    const e = skillsSorted[key]!;
+    wh.update(`${key}:${e.contentHash}:${e.closureHash}`);
+  }
+  const workspaceHash = `sha256:${wh.digest("hex")}`;
+
+  return {
+    version: "1",
+    ...(options?.generatedBy ? { generatedBy: options.generatedBy } : {}),
+    workspaceHash,
+    skills: skillsSorted,
+  };
 }
 
 export async function writeLockfile(lockfile: Lockfile, root: string): Promise<void> {

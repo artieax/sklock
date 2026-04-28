@@ -1,10 +1,16 @@
 {
   "version": "1",
+  "generatedBy": {
+    "name": "sklock",
+    "version": "0.2.0"
+  },
+  "workspaceHash": "sha256:bb9264687f3590ad62a957489ba6f43e8ba3c4a7688392db0653144bbad0c45b",
   "skills": {
     "build-validator": {
       "id": "build-validator",
       "path": "release-pipeline/skills/build-validator",
-      "hash": "sha256:e416d99558322a40a16cbab2bd2131bb9ea509337c45442104df7197ac87e53a",
+      "contentHash": "sha256:e416d99558322a40a16cbab2bd2131bb9ea509337c45442104df7197ac87e53a",
+      "closureHash": "sha256:e416d99558322a40a16cbab2bd2131bb9ea509337c45442104df7197ac87e53a",
       "requires": [],
       "version": "0.4.0",
       "parent": "release-pipeline"
@@ -12,21 +18,24 @@
     "code-scaffold": {
       "id": "code-scaffold",
       "path": "code-scaffold",
-      "hash": "sha256:5142f5fb0629e8aeb31e505e3cb87fc0598185629b9be5c65cb801fad6cb31d3",
+      "contentHash": "sha256:5142f5fb0629e8aeb31e505e3cb87fc0598185629b9be5c65cb801fad6cb31d3",
+      "closureHash": "sha256:5142f5fb0629e8aeb31e505e3cb87fc0598185629b9be5c65cb801fad6cb31d3",
       "requires": [],
       "version": "0.6.0"
     },
     "deploy-notify": {
       "id": "deploy-notify",
       "path": "deploy-notify",
-      "hash": "sha256:0e5d5e9bbb37902c379f1280e6ed4f046d7d80f7aeefd7376e184577e8a0fb5f",
+      "contentHash": "sha256:0e5d5e9bbb37902c379f1280e6ed4f046d7d80f7aeefd7376e184577e8a0fb5f",
+      "closureHash": "sha256:0e5d5e9bbb37902c379f1280e6ed4f046d7d80f7aeefd7376e184577e8a0fb5f",
       "requires": [],
       "version": "1.0.0"
     },
     "e2e-test": {
       "id": "e2e-test",
       "path": "release-pipeline/skills/test-runner/skills/e2e-test",
-      "hash": "sha256:20c16ae29b1fc92941d087ea0e78bc24e52d03c02848b4caaea4a1c290d10ccd",
+      "contentHash": "sha256:20c16ae29b1fc92941d087ea0e78bc24e52d03c02848b4caaea4a1c290d10ccd",
+      "closureHash": "sha256:20c16ae29b1fc92941d087ea0e78bc24e52d03c02848b4caaea4a1c290d10ccd",
       "requires": [],
       "version": "0.3.0",
       "parent": "test-runner"
@@ -34,7 +43,8 @@
     "release-pipeline": {
       "id": "release-pipeline",
       "path": "release-pipeline",
-      "hash": "sha256:d46aeb2530ae21650de709281f69dae8a594c074c0828013f88cfadc5aae1caa",
+      "contentHash": "sha256:836f2f821c311a77045388d844a8fc5c1aacb1cd2279a41ceca7e8bbc863797d",
+      "closureHash": "sha256:d46aeb2530ae21650de709281f69dae8a594c074c0828013f88cfadc5aae1caa",
       "requires": [
         "deploy-notify"
       ],
@@ -43,7 +53,8 @@
     "snapshot-test": {
       "id": "snapshot-test",
       "path": "release-pipeline/skills/test-runner/skills/snapshot-test",
-      "hash": "sha256:9fb3bbcc8e25d265dbcdadbefc9255f84dca8a8d7936621d8394b2821cd99b75",
+      "contentHash": "sha256:9fb3bbcc8e25d265dbcdadbefc9255f84dca8a8d7936621d8394b2821cd99b75",
+      "closureHash": "sha256:9fb3bbcc8e25d265dbcdadbefc9255f84dca8a8d7936621d8394b2821cd99b75",
       "requires": [],
       "version": "0.2.0",
       "parent": "test-runner"
@@ -51,7 +62,8 @@
     "test-runner": {
       "id": "test-runner",
       "path": "release-pipeline/skills/test-runner",
-      "hash": "sha256:d18d97605b490952ba866f2a2b8627dd2c0ed8f1220fcb3a0dbad72909663ddf",
+      "contentHash": "sha256:6f1765d4732854fdf192c583ecbb93333620f2be016e0e58a2f63d04594a659d",
+      "closureHash": "sha256:d18d97605b490952ba866f2a2b8627dd2c0ed8f1220fcb3a0dbad72909663ddf",
       "requires": [],
       "version": "1.1.0",
       "parent": "release-pipeline"
@@ -59,7 +71,8 @@
     "unit-test": {
       "id": "unit-test",
       "path": "release-pipeline/skills/test-runner/skills/unit-test",
-      "hash": "sha256:1f7340a619b8fc47acb6f73eb64b36fb9724587bc62d53fdc1cb0f06b515a931",
+      "contentHash": "sha256:1f7340a619b8fc47acb6f73eb64b36fb9724587bc62d53fdc1cb0f06b515a931",
+      "closureHash": "sha256:1f7340a619b8fc47acb6f73eb64b36fb9724587bc62d53fdc1cb0f06b515a931",
       "requires": [],
       "version": "0.5.0",
       "parent": "test-runner"

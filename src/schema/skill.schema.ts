@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const SkillNameSchema = z
+export const SkillNameSchema = z
   .string()
   .min(1)
   .max(64)
@@ -30,6 +30,21 @@ function applyIdCheck<T extends { id?: string | undefined; name: string }>(
   }
 }
 
+function checkDuplicateRequires(skill: { requires?: string[] }, ctx: z.RefinementCtx): void {
+  const seen = new Set<string>();
+  for (const req of skill.requires ?? []) {
+    if (seen.has(req)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["requires"],
+        message: `Duplicate dependency: ${req}`,
+      });
+      return;
+    }
+    seen.add(req);
+  }
+}
+
 export const SkillSchema = z.object({
   id: z.string().optional(),
   name: SkillNameSchema,
@@ -43,12 +58,13 @@ export const SkillSchema = z.object({
   // core Agent Skills fields stay spec-compatible.
   version: versionField,
   author: z.string().optional(),
-  requires: z.array(z.string()).optional().default([]),
+  requires: z.array(SkillNameSchema).optional().default([]),
   tags: z.array(z.string()).optional().default([]),
 })
   // Agent Skills base + Claude Code / ecosystem extension fields (hooks, context, …)
   .passthrough()
-  .superRefine(applyIdCheck);
+  .superRefine(applyIdCheck)
+  .superRefine(checkDuplicateRequires);
 
 export type Skill = z.infer<typeof SkillSchema>;
 
@@ -67,8 +83,9 @@ export const SkillStrictSchema = z.object({
   "allowed-tools": z.string().optional(),
   version: versionField,
   author: z.string().optional(),
-  requires: z.array(z.string()).optional().default([]),
+  requires: z.array(SkillNameSchema).optional().default([]),
   tags: z.array(z.string()).optional().default([]),
 })
   .passthrough()
-  .superRefine(applyIdCheck);
+  .superRefine(applyIdCheck)
+  .superRefine(checkDuplicateRequires);

@@ -1,17 +1,24 @@
 {
   "version": "1",
+  "generatedBy": {
+    "name": "sklock",
+    "version": "0.2.0"
+  },
+  "workspaceHash": "sha256:60ced727b5a00681d4ac320211a8196cc265a136d5a725cdd49cb44b16b08893",
   "skills": {
     "citation-formatter": {
       "id": "citation-formatter",
       "path": "citation-formatter",
-      "hash": "sha256:8af4afdb5af6f9b442a7ce0a311da4866fa6a13382e491551efc2be7b46f1f77",
+      "contentHash": "sha256:8af4afdb5af6f9b442a7ce0a311da4866fa6a13382e491551efc2be7b46f1f77",
+      "closureHash": "sha256:8af4afdb5af6f9b442a7ce0a311da4866fa6a13382e491551efc2be7b46f1f77",
       "requires": [],
       "version": "0.3.0"
     },
     "fetch-content": {
       "id": "fetch-content",
       "path": "research-report/skills/summarize/skills/fetch-content",
-      "hash": "sha256:743bf48cafb4c5500d0e27300079ca3007afbb356948354f38bfbe86b929a33a",
+      "contentHash": "sha256:743bf48cafb4c5500d0e27300079ca3007afbb356948354f38bfbe86b929a33a",
+      "closureHash": "sha256:743bf48cafb4c5500d0e27300079ca3007afbb356948354f38bfbe86b929a33a",
       "requires": [],
       "version": "0.1.0",
       "parent": "summarize"
@@ -19,7 +26,8 @@
     "format-output": {
       "id": "format-output",
       "path": "research-report/skills/summarize/skills/format-output",
-      "hash": "sha256:49952016c64fc625df12a6caaee84f969aab45ec8a0c5f75363d389e41eace70",
+      "contentHash": "sha256:49952016c64fc625df12a6caaee84f969aab45ec8a0c5f75363d389e41eace70",
+      "closureHash": "sha256:49952016c64fc625df12a6caaee84f969aab45ec8a0c5f75363d389e41eace70",
       "requires": [],
       "version": "0.1.0",
       "parent": "summarize"
@@ -27,14 +35,16 @@
     "hello": {
       "id": "hello",
       "path": "hello",
-      "hash": "sha256:6a6b1c94891a6d40014c90d2307ad025c13d91415a0b9553506c75bbf2927b06",
+      "contentHash": "sha256:6a6b1c94891a6d40014c90d2307ad025c13d91415a0b9553506c75bbf2927b06",
+      "closureHash": "sha256:6a6b1c94891a6d40014c90d2307ad025c13d91415a0b9553506c75bbf2927b06",
       "requires": [],
       "version": "0.1.0"
     },
     "research-report": {
       "id": "research-report",
       "path": "research-report",
-      "hash": "sha256:1e0d58ac7715f244ca737f0bc83afa7f38e59309002d4729e7fe54a942d6824c",
+      "contentHash": "sha256:6199ed75f8443f328a4e1932f6fd58cbf8711c7d856402b2ed05e2e9ebd3f58a",
+      "closureHash": "sha256:1e0d58ac7715f244ca737f0bc83afa7f38e59309002d4729e7fe54a942d6824c",
       "requires": [
         "citation-formatter"
       ],
@@ -43,7 +53,8 @@
     "summarize": {
       "id": "summarize",
       "path": "research-report/skills/summarize",
-      "hash": "sha256:ea39249334961f46230aeddadd9cc0de5c33eb568cf70263dfecc9b4bf7b2af1",
+      "contentHash": "sha256:9d077ead4d618df2561bd8e0bba0137e2c9b70cafa6f61772abae567fc7f61f2",
+      "closureHash": "sha256:ea39249334961f46230aeddadd9cc0de5c33eb568cf70263dfecc9b4bf7b2af1",
       "requires": [],
       "version": "0.2.0",
       "parent": "research-report"

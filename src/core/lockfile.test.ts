@@ -3,7 +3,7 @@ import { tmpdir } from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 import { describe, expect, it } from "vitest";
-import { generateLockfile, hashSkillDirectory, readLockfile } from "./lockfile.js";
+import { generateLockfile, hashSkillClosure, hashSkillContent, readLockfile } from "./lockfile.js";
 import type { DiscoveredSkill } from "./scanner.js";
 
 async function makeRoot(): Promise<string> {
@@ -35,7 +35,7 @@ describe("lockfile", () => {
     expect(lockfile.skills.child.parent).toBe("parent");
   });
 
-  it("includes non-SKILL.md files in the content hash", async () => {
+  it("includes non-SKILL.md files in the closure hash", async () => {
     const root = await makeRoot();
     const skillDir = path.join(root, "alpha");
     await mkdir(skillDir, { recursive: true });
@@ -43,10 +43,10 @@ describe("lockfile", () => {
     const skillMd = "---\nname: alpha\ndescription: Alpha\n---\n\n# A\n";
     await writeFile(skillMdPath, skillMd, "utf-8");
 
-    const h1 = await hashSkillDirectory(skillDir);
+    const h1 = await hashSkillClosure(skillDir);
     await mkdir(path.join(skillDir, "scripts"), { recursive: true });
     await writeFile(path.join(skillDir, "scripts", "run.sh"), "#!/bin/sh\necho ok\n", "utf-8");
-    const h2 = await hashSkillDirectory(skillDir);
+    const h2 = await hashSkillClosure(skillDir);
 
     expect(h1).not.toBe(h2);
   });
@@ -57,11 +57,31 @@ describe("lockfile", () => {
     await mkdir(skillDir, { recursive: true });
     await writeFile(path.join(skillDir, "SKILL.md"), "---\nname: root-skill\ndescription: T\n---\n\n# T\n", "utf-8");
 
-    const h1 = await hashSkillDirectory(skillDir);
+    const h1 = await hashSkillClosure(skillDir);
     await writeFile(path.join(skillDir, "skill.lock"), JSON.stringify({ version: "1", skills: {} }), "utf-8");
-    const h2 = await hashSkillDirectory(skillDir);
+    const h2 = await hashSkillClosure(skillDir);
 
     expect(h1).toBe(h2);
+  });
+
+  it("contentHash excludes nested skills/ subdirectory", async () => {
+    const root = await makeRoot();
+    const skillDir = path.join(root, "parent");
+    const subSkillDir = path.join(skillDir, "skills", "child");
+    await mkdir(subSkillDir, { recursive: true });
+    await writeFile(path.join(skillDir, "SKILL.md"), "---\nname: parent\ndescription: P\n---\n\n# P\n", "utf-8");
+    await writeFile(path.join(subSkillDir, "SKILL.md"), "---\nname: child\ndescription: C\n---\n\n# C\n", "utf-8");
+
+    const content1 = await hashSkillContent(skillDir);
+    const closure1 = await hashSkillClosure(skillDir);
+
+    await writeFile(path.join(subSkillDir, "SKILL.md"), "---\nname: child\ndescription: changed\n---\n\n# C\n", "utf-8");
+
+    const content2 = await hashSkillContent(skillDir);
+    const closure2 = await hashSkillClosure(skillDir);
+
+    expect(content1).toBe(content2);
+    expect(closure1).not.toBe(closure2);
   });
 
   it("throws when skill.lock exists but is invalid", async () => {
@@ -73,6 +93,7 @@ describe("lockfile", () => {
 
   it("rejects lockfile entries whose id does not match the skills key", async () => {
     const root = await makeRoot();
+    const hash = "sha256:" + "a".repeat(64);
     await writeFile(
       path.join(root, "skill.lock"),
       JSON.stringify(
@@ -82,7 +103,8 @@ describe("lockfile", () => {
             alpha: {
               id: "wrong",
               path: "alpha",
-              hash: "sha256:" + "a".repeat(64),
+              contentHash: hash,
+              closureHash: hash,
               requires: [],
             },
           },
@@ -114,9 +136,9 @@ describe("lockfile", () => {
     const crlf = "---\r\nname: crlf\ndescription: T\r\n---\r\n\r\n# T\r\n";
     const lf = "---\nname: crlf\ndescription: T\n---\n\n# T\n";
     await writeFile(path.join(skillDir, "SKILL.md"), crlf, "utf-8");
-    const h1 = await hashSkillDirectory(skillDir);
+    const h1 = await hashSkillClosure(skillDir);
     await writeFile(path.join(skillDir, "SKILL.md"), lf, "utf-8");
-    const h2 = await hashSkillDirectory(skillDir);
+    const h2 = await hashSkillClosure(skillDir);
     expect(h1).toBe(h2);
   });
 
@@ -127,9 +149,9 @@ describe("lockfile", () => {
     await writeFile(path.join(skillDir, "SKILL.md"), "---\nname: binary\ndescription: T\n---\n\n# T\n", "utf-8");
 
     await writeFile(path.join(skillDir, "asset.bin"), Buffer.from([0x80]));
-    const h1 = await hashSkillDirectory(skillDir);
+    const h1 = await hashSkillClosure(skillDir);
     await writeFile(path.join(skillDir, "asset.bin"), Buffer.from([0x81]));
-    const h2 = await hashSkillDirectory(skillDir);
+    const h2 = await hashSkillClosure(skillDir);
 
     expect(h1).not.toBe(h2);
   });
@@ -141,9 +163,9 @@ describe("lockfile", () => {
     await writeFile(path.join(skillDir, "SKILL.md"), "---\nname: binary-newline\ndescription: T\n---\n\n# T\n", "utf-8");
 
     await writeFile(path.join(skillDir, "asset.bin"), Buffer.from([0x0d]));
-    const h1 = await hashSkillDirectory(skillDir);
+    const h1 = await hashSkillClosure(skillDir);
     await writeFile(path.join(skillDir, "asset.bin"), Buffer.from([0x0a]));
-    const h2 = await hashSkillDirectory(skillDir);
+    const h2 = await hashSkillClosure(skillDir);
 
     expect(h1).not.toBe(h2);
   });
@@ -157,16 +179,16 @@ describe("lockfile", () => {
     await writeFile(scriptPath, "#!/bin/sh\necho ok\n", "utf-8");
 
     await chmod(scriptPath, 0o644);
-    const h1 = await hashSkillDirectory(skillDir);
+    const h1 = await hashSkillClosure(skillDir);
     await chmod(scriptPath, 0o755);
-    const h2 = await hashSkillDirectory(skillDir);
+    const h2 = await hashSkillClosure(skillDir);
 
     expect(h1).not.toBe(h2);
   });
 
   it("matches the committed hello example hash (cross-platform stable)", async () => {
     const helloDir = path.join(fileURLToPath(import.meta.url), "../../../examples/basic/skills/hello");
-    const hash = await hashSkillDirectory(helloDir);
+    const hash = await hashSkillClosure(helloDir);
     expect(hash).toBe("sha256:6a6b1c94891a6d40014c90d2307ad025c13d91415a0b9553506c75bbf2927b06");
   });
 });

@@ -11,6 +11,7 @@ async function expectLockfileMatchesWorkspace(relativeSkillsDir: string): Promis
   expect(validateSkills(skills).valid).toBe(true);
   const generated = await generateLockfile(skills, root);
   const onDisk = JSON.parse(await readFile(path.join(root, "skill.lock"), "utf-8"));
+  delete onDisk.generatedBy;
   expect(generated).toEqual(onDisk);
 }
 

@@ -2,6 +2,7 @@ import { scanSkills } from "../core/scanner.js";
 import { validateSkills } from "../core/validator.js";
 import { generateLockfile, readLockfile } from "../core/lockfile.js";
 import { lintSkills, DEFAULT_MAX_LINES } from "../core/lint-skills.js";
+import { diffLockfiles } from "../core/drift.js";
 import { resolveWorkspaceRoot } from "./shared.js";
 import type { ValidationError } from "../core/validator.js";
 import type { LintIssue } from "../core/lint-skills.js";
@@ -21,18 +22,6 @@ export interface DoctorResult {
   lockfile: LockfileStatus;
   lintIssues: LintIssue[];
   healthy: boolean;
-}
-
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
-  if (value && typeof value === "object") {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, v]) => v !== undefined)
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${stableStringify(v)}`).join(",")}}`;
-  }
-  if (value === undefined) return "undefined";
-  return JSON.stringify(value);
 }
 
 interface DoctorOptions {
@@ -63,20 +52,8 @@ export async function doctorCommand(options: DoctorOptions): Promise<void> {
     };
   } else {
     const current = await generateLockfile(skills, root);
-    const currentKeys = Object.keys(current.skills).sort();
-    const existingKeys = Object.keys(existing.skills).sort();
-    const added = currentKeys.filter((k) => !existing.skills[k]);
-    const removed = existingKeys.filter((k) => !current.skills[k]);
-    const changed = currentKeys.filter(
-      (k) => existing.skills[k] && stableStringify(existing.skills[k]) !== stableStringify(current.skills[k])
-    );
-    lockStatus = {
-      exists: true,
-      stale: added.length > 0 || removed.length > 0 || changed.length > 0,
-      added,
-      removed,
-      changed,
-    };
+    const { stale, added, removed, changed } = diffLockfiles(existing, current);
+    lockStatus = { exists: true, stale, added, removed, changed };
   }
 
   const lintIssues = await lintSkills(skills, { maxLines: DEFAULT_MAX_LINES });

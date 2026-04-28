@@ -1,29 +1,13 @@
 import { scanSkills } from "../core/scanner.js";
 import { generateLockfile, readLockfile } from "../core/lockfile.js";
 import { validateSkills } from "../core/validator.js";
+import { diffLockfiles } from "../core/drift.js";
 import { exitOnValidationErrors, resolveWorkspaceRoot } from "./shared.js";
 
 interface CheckOptions {
   root?: string;
   frozen?: boolean;
   json?: boolean;
-}
-
-/** Deterministic JSON-like string for lock entries; only supports JSON-serializable primitives. */
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(stableStringify).join(",")}]`;
-  }
-  if (value && typeof value === "object") {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, v]) => v !== undefined)
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    return `{${entries.map(([key, entry]) => `${JSON.stringify(key)}:${stableStringify(entry)}`).join(",")}}`;
-  }
-  if (value === undefined) {
-    return "undefined";
-  }
-  return JSON.stringify(value);
 }
 
 export async function checkCommand(options: CheckOptions): Promise<void> {
@@ -61,16 +45,7 @@ export async function checkCommand(options: CheckOptions): Promise<void> {
     return;
   }
 
-  const currentKeys = Object.keys(current.skills).sort();
-  const existingKeys = Object.keys(existing.skills).sort();
-
-  const added = currentKeys.filter((k) => !existing.skills[k]);
-  const removed = existingKeys.filter((k) => !current.skills[k]);
-  const changed = currentKeys.filter(
-    (k) => existing.skills[k] && stableStringify(existing.skills[k]) !== stableStringify(current.skills[k])
-  );
-
-  const isStale = added.length > 0 || removed.length > 0 || changed.length > 0;
+  const { stale: isStale, added, removed, changed } = diffLockfiles(existing, current);
   const failOnStale = Boolean(options.frozen);
 
   if (options.json) {

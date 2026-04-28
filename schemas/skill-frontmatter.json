@@ -43,7 +43,7 @@
         "requires": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/SkillFrontmatter/properties/name"
           },
           "default": []
         },
