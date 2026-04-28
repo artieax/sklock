@@ -1,0 +1,68 @@
+{
+  "version": "1",
+  "skills": {
+    "build-validator": {
+      "id": "build-validator",
+      "path": "release-pipeline/skills/build-validator",
+      "hash": "e416d99558322a40",
+      "requires": [],
+      "version": "0.4.0",
+      "parent": "release-pipeline"
+    },
+    "code-scaffold": {
+      "id": "code-scaffold",
+      "path": "code-scaffold",
+      "hash": "5142f5fb0629e8ae",
+      "requires": [],
+      "version": "0.6.0"
+    },
+    "deploy-notify": {
+      "id": "deploy-notify",
+      "path": "deploy-notify",
+      "hash": "0e5d5e9bbb37902c",
+      "requires": [],
+      "version": "1.0.0"
+    },
+    "e2e-test": {
+      "id": "e2e-test",
+      "path": "release-pipeline/skills/test-runner/skills/e2e-test",
+      "hash": "20c16ae29b1fc929",
+      "requires": [],
+      "version": "0.3.0",
+      "parent": "test-runner"
+    },
+    "release-pipeline": {
+      "id": "release-pipeline",
+      "path": "release-pipeline",
+      "hash": "d46aeb2530ae2165",
+      "requires": [
+        "deploy-notify"
+      ],
+      "version": "2.0.0"
+    },
+    "snapshot-test": {
+      "id": "snapshot-test",
+      "path": "release-pipeline/skills/test-runner/skills/snapshot-test",
+      "hash": "9fb3bbcc8e25d265",
+      "requires": [],
+      "version": "0.2.0",
+      "parent": "test-runner"
+    },
+    "test-runner": {
+      "id": "test-runner",
+      "path": "release-pipeline/skills/test-runner",
+      "hash": "d18d97605b490952",
+      "requires": [],
+      "version": "1.1.0",
+      "parent": "release-pipeline"
+    },
+    "unit-test": {
+      "id": "unit-test",
+      "path": "release-pipeline/skills/test-runner/skills/unit-test",
+      "hash": "1f7340a619b8fc47",
+      "requires": [],
+      "version": "0.5.0",
+      "parent": "test-runner"
+    }
+  }
+}

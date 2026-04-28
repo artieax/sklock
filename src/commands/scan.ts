@@ -8,11 +8,14 @@ interface ScanOptions {
 
 export async function scanCommand(options: ScanOptions): Promise<void> {
   const root = resolveWorkspaceRoot(options.root);
-  const skills = await scanSkills(root);
+  const { skills, warnings } = await scanSkills(root);
 
   if (options.json) {
-    console.log(JSON.stringify(skills, null, 2));
+    console.log(JSON.stringify({ skills, warnings }, null, 2));
   } else {
+    for (const w of warnings) {
+      console.warn(w.message);
+    }
     if (skills.length === 0) {
       console.log("No skills found.");
     } else {

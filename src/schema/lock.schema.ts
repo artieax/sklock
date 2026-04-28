@@ -6,12 +6,22 @@ export const LockEntrySchema = z.object({
   version: z.string().optional(),
   hash: z.string(),
   requires: z.array(z.string()).default([]),
+  parent: z.string().optional(),
 });
 
 export const LockfileSchema = z.object({
   version: z.string().default("1"),
-  generatedAt: z.string(),
   skills: z.record(z.string(), LockEntrySchema),
+}).superRefine((lockfile, ctx) => {
+  for (const [key, entry] of Object.entries(lockfile.skills)) {
+    if (entry.id !== key) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["skills", key, "id"],
+        message: `Lock entry id must match its key (${key})`,
+      });
+    }
+  }
 });
 
 export type LockEntry = z.infer<typeof LockEntrySchema>;

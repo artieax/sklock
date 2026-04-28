@@ -1,0 +1,70 @@
+{
+  "version": "1",
+  "skills": {
+    "caption-writer": {
+      "id": "caption-writer",
+      "path": "social-campaign/skills/caption-writer",
+      "hash": "46d2365d2a067e3c",
+      "requires": [],
+      "version": "0.3.0",
+      "parent": "social-campaign"
+    },
+    "copy-review": {
+      "id": "copy-review",
+      "path": "copy-review",
+      "hash": "49724749b79611a2",
+      "requires": [],
+      "version": "0.4.0"
+    },
+    "email-campaign": {
+      "id": "email-campaign",
+      "path": "email-campaign",
+      "hash": "0812c2b9c58dcc26",
+      "requires": [
+        "copy-review",
+        "send-email"
+      ],
+      "version": "1.2.0"
+    },
+    "hashtag-generator": {
+      "id": "hashtag-generator",
+      "path": "social-campaign/skills/hashtag-generator",
+      "hash": "4a47a53a5f0254d2",
+      "requires": [],
+      "version": "0.1.0",
+      "parent": "social-campaign"
+    },
+    "scheduler": {
+      "id": "scheduler",
+      "path": "scheduler",
+      "hash": "87c4f570ae49e029",
+      "requires": [],
+      "version": "0.9.0"
+    },
+    "send-email": {
+      "id": "send-email",
+      "path": "send-email",
+      "hash": "cda9e8079dc58bc8",
+      "requires": [],
+      "version": "1.0.0"
+    },
+    "social-campaign": {
+      "id": "social-campaign",
+      "path": "social-campaign",
+      "hash": "865749850cd396fb",
+      "requires": [
+        "copy-review",
+        "scheduler"
+      ],
+      "version": "0.8.0"
+    },
+    "subject-writer": {
+      "id": "subject-writer",
+      "path": "email-campaign/skills/subject-writer",
+      "hash": "814b611f8261847e",
+      "requires": [],
+      "version": "0.2.0",
+      "parent": "email-campaign"
+    }
+  }
+}

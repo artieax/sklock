@@ -1,5 +1,4 @@
 export * from "./core/scanner.js";
-export * from "./core/manifest.js";
 export * from "./core/resolver.js";
 export * from "./core/graph.js";
 export * from "./core/validator.js";
@@ -8,5 +7,4 @@ export * from "./core/mermaid.js";
 export * from "./core/tree.js";
 export * from "./core/export.js";
 export * from "./schema/skill.schema.js";
-export * from "./schema/workspace.schema.js";
 export * from "./schema/lock.schema.js";

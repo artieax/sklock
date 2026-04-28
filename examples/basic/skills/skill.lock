@@ -1,12 +1,52 @@
 {
   "version": "1",
-  "generatedAt": "2026-04-25T10:26:36.740Z",
   "skills": {
+    "citation-formatter": {
+      "id": "citation-formatter",
+      "path": "citation-formatter",
+      "hash": "8af4afdb5af6f9b4",
+      "requires": [],
+      "version": "0.3.0"
+    },
+    "fetch-content": {
+      "id": "fetch-content",
+      "path": "research-report/skills/summarize/skills/fetch-content",
+      "hash": "743bf48cafb4c550",
+      "requires": [],
+      "version": "0.1.0",
+      "parent": "summarize"
+    },
+    "format-output": {
+      "id": "format-output",
+      "path": "research-report/skills/summarize/skills/format-output",
+      "hash": "49952016c64fc625",
+      "requires": [],
+      "version": "0.1.0",
+      "parent": "summarize"
+    },
     "hello": {
       "id": "hello",
       "path": "hello",
-      "hash": "be37ed0d4f5ad217",
-      "requires": []
+      "hash": "6a6b1c94891a6d40",
+      "requires": [],
+      "version": "0.1.0"
+    },
+    "research-report": {
+      "id": "research-report",
+      "path": "research-report",
+      "hash": "1e0d58ac7715f244",
+      "requires": [
+        "citation-formatter"
+      ],
+      "version": "1.0.0"
+    },
+    "summarize": {
+      "id": "summarize",
+      "path": "research-report/skills/summarize",
+      "hash": "ea39249334961f46",
+      "requires": [],
+      "version": "0.2.0",
+      "parent": "research-report"
     }
   }
 }

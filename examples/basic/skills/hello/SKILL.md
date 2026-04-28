@@ -1,7 +1,10 @@
-# Hello Skill
+---
+name: hello
+version: "0.1.0"
+tags: [example]
+description: A standalone skill with no dependencies
+---
 
-A sample skill with no dependencies.
+# Hello
 
-## Purpose
-
-This is a demonstration skill included with sklock.
+A standalone skill with no dependencies. Good starting point for new workspaces.

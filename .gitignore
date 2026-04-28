@@ -2,4 +2,27 @@ node_modules/
 dist/
 coverage/
 *.log
+*.tgz
 .DS_Store
+
+# Environment and local machine state
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+.cursor/
+.specstory/
+
+# Temporary files
+.cache/
+.tmp/
+tmp/
+temp/
+
+# Local notes and ad-hoc review artifacts
+*.local.md
+local*.md
+review/**
+!review/
+!review/README.md

@@ -1,6 +1,5 @@
 import { scanSkills } from "../core/scanner.js";
-import { resolveSkills } from "../core/resolver.js";
-import { renderTree } from "../core/tree.js";
+import { buildTree, renderTree } from "../core/tree.js";
 import { resolveWorkspaceRoot } from "./shared.js";
 
 interface TreeOptions {
@@ -10,12 +9,14 @@ interface TreeOptions {
 
 export async function treeCommand(options: TreeOptions): Promise<void> {
   const root = resolveWorkspaceRoot(options.root);
-  const skills = await scanSkills(root);
-  const resolved = resolveSkills(skills);
+  const { skills, warnings } = await scanSkills(root);
+  for (const w of warnings) {
+    console.warn(w.message);
+  }
 
   if (options.json) {
-    console.log(JSON.stringify(resolved, null, 2));
+    console.log(JSON.stringify(buildTree(skills), null, 2));
   } else {
-    console.log(renderTree(resolved));
+    console.log(renderTree(skills));
   }
 }

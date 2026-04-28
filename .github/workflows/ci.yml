@@ -8,21 +8,59 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
 
       - run: npm ci
       - run: npm run check
       - run: npm test
       - run: npm run build
       - run: node dist/cli.js --help
+      - run: node dist/cli.js --version
       - run: node dist/cli.js validate --root examples/basic/skills
-      - run: node dist/cli.js lock --root examples/basic/skills
+      - run: node dist/cli.js validate --root examples/coding/skills
+      - run: node dist/cli.js validate --root examples/marketing/skills
+      - run: node dist/cli.js check --root examples/basic/skills --frozen
+      - run: node dist/cli.js check --root examples/coding/skills --frozen
+      - run: node dist/cli.js check --root examples/marketing/skills --frozen
+      - run: node dist/cli.js lint --root examples/basic/skills --quiet
+      - run: node dist/cli.js lint --root examples/coding/skills --quiet
+      - run: node dist/cli.js lint --root examples/marketing/skills --quiet
+      - run: node dist/cli.js tree --root examples/basic/skills
       - run: node dist/cli.js graph --root examples/basic/skills --mermaid
+      - run: npm pack --dry-run
+
+  bun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun run check
+      - run: bun run test
+      - run: bun run build
+      - run: bun ./dist/cli.js --help
+      - run: bun ./dist/cli.js --version
+      - run: bun ./dist/cli.js validate --root examples/basic/skills
+      - run: bun ./dist/cli.js validate --root examples/coding/skills
+      - run: bun ./dist/cli.js validate --root examples/marketing/skills
+      - run: bun ./dist/cli.js check --root examples/basic/skills --frozen
+      - run: bun ./dist/cli.js check --root examples/coding/skills --frozen
+      - run: bun ./dist/cli.js check --root examples/marketing/skills --frozen
+      - run: bun ./dist/cli.js lint --root examples/basic/skills --quiet
+      - run: bun ./dist/cli.js lint --root examples/coding/skills --quiet
+      - run: bun ./dist/cli.js lint --root examples/marketing/skills --quiet
+      - run: bun ./dist/cli.js tree --root examples/basic/skills
+      - run: bun ./dist/cli.js graph --root examples/basic/skills --mermaid
       - run: npm pack --dry-run

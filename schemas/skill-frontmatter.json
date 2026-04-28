@@ -1,0 +1,65 @@
+{
+  "$ref": "#/definitions/SkillFrontmatter",
+  "definitions": {
+    "SkillFrontmatter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "license": {
+          "type": "string"
+        },
+        "compatibility": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "allowed-tools": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+(\\.\\d+)?([.+~-]?[a-zA-Z0-9.-]*)?$"
+        },
+        "author": {
+          "type": "string"
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
