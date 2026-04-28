@@ -24,7 +24,7 @@ describe("init --example", () => {
         readFile(path.join(exampleRoot, rel), "utf-8"),
         readFile(path.join(root, rel), "utf-8"),
       ]);
-      expect(actual).toBe(expected);
+      expect(actual.replace(/\r\n/g, "\n")).toBe(expected.replace(/\r\n/g, "\n"));
     }
   });
 });
