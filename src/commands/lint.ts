@@ -1,13 +1,10 @@
-import { readFile } from "fs/promises";
 import { scanSkills } from "../core/scanner.js";
 import { validateSkills } from "../core/validator.js";
+import { lintSkills, DEFAULT_MAX_LINES } from "../core/lint-skills.js";
 import { resolveWorkspaceRoot } from "./shared.js";
+import type { LintIssue } from "../core/lint-skills.js";
 
-interface LintIssue {
-  skillId: string;
-  level: "warn" | "error";
-  message: string;
-}
+export { DEFAULT_MAX_LINES };
 
 interface LintOptions {
   root?: string;
@@ -16,8 +13,6 @@ interface LintOptions {
   /** Max lines in SKILL.md before a split warning (default: 200). */
   maxLines?: number;
 }
-
-export const DEFAULT_MAX_LINES = 200;
 
 function resolveMaxLines(raw: number | string | undefined): number {
   if (raw === undefined) return DEFAULT_MAX_LINES;
@@ -35,34 +30,12 @@ export async function lintCommand(options: LintOptions): Promise<void> {
   const validation = validateSkills(skills);
   const issues: LintIssue[] = validation.errors.map((error) => ({
     skillId: error.skillId,
-    level: "error",
+    level: "error" as const,
     message: error.message,
   }));
 
-  for (const skill of skills) {
-    const content = await readFile(skill.skillMdPath, "utf-8");
-    const lineCount = content.split("\n").length;
-
-    if (lineCount > maxLines) {
-      issues.push({
-        skillId: skill.id,
-        level: "warn",
-        message: `SKILL.md is ${lineCount} lines — consider splitting (threshold: ${maxLines})`,
-      });
-    }
-
-    if (!skill.description) {
-      issues.push({ skillId: skill.id, level: "warn", message: "No description in frontmatter" });
-    }
-
-    if (!skill.version) {
-      issues.push({ skillId: skill.id, level: "warn", message: "No version in frontmatter" });
-    }
-
-    if (!/^#\s+.+$/m.test(content)) {
-      issues.push({ skillId: skill.id, level: "warn", message: "No top-level heading (# ...) in SKILL.md body" });
-    }
-  }
+  const contentIssues = await lintSkills(skills, { maxLines });
+  issues.push(...contentIssues);
 
   if (options.json) {
     console.log(JSON.stringify({ skills: skills.length, issues }, null, 2));

@@ -103,6 +103,7 @@ export function createSklockCli(): CAC {
     .option("--mermaid", "Render as Mermaid diagram")
     .option("--format <format>", "Output format")
     .option("--json", "Output as JSON")
+    .option("--mode <mode>", "Graph mode: deps (default), containment, or both")
     .action((options) => {
       runCommand(() => graphCommand(options));
     });

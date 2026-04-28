@@ -163,16 +163,17 @@ Tags: research, output
 |---|---|
 | `init` | Scaffold a skills workspace |
 | `scan` | Discover and list all skills |
-| `validate` | Validate dependency graph |
+| `validate` | Validate dependency graph (`--strict` enforces Agent Skills spec compliance) |
 | `lock` | Generate `skill.lock` |
 | `check` | Verify lockfile is current (default: warn if stale; `--frozen` fails for CI) |
 | `tree` | Display skills as a nested tree |
-| `graph` | Render dependency graph (`--mermaid` or `--format json|mermaid|text`) |
+| `graph` | Render dependency graph (`--mermaid`; `--mode deps\|containment\|both`) |
 | `why <id>` | Show what depends on a skill |
 | `explain <id>` | Show full skill details |
 | `export` | Export graph as JSON / YAML / Mermaid |
 | `lint` | Report quality issues in `SKILL.md` files |
 | `add <id> --dep <dep>` | Add a dependency to a skill and refresh `skill.lock` |
+| `doctor` | Run full workspace health check: validation, lockfile drift, and lint summary |
 
 `sklock add` updates YAML frontmatter using a document-aware parser so comments and layout are preserved when possible; if parsing fails, it falls back to rewriting the frontmatter block.
 

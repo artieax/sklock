@@ -34,25 +34,27 @@ export async function addCommand(skillId: string, options: AddOptions): Promise<
     process.exit(1);
   }
 
-  if (skill.requires.includes(depId)) {
-    console.log(`${depId} is already in ${skillId} requires[]`);
-    return;
+  const alreadyExists = skill.requires.includes(depId);
+  let originalContent: string | null = null;
+
+  if (alreadyExists) {
+    console.log(`${depId} is already in ${skillId} requires[] — refreshing skill.lock`);
+  } else {
+    const proposedSkills = skills.map((currentSkill) =>
+      currentSkill.id === skillId
+        ? {
+            ...currentSkill,
+            requires: [...currentSkill.requires, depId].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)),
+          }
+        : currentSkill
+    );
+    exitOnValidationErrors(validateSkills(proposedSkills), `update ${skillId}`);
+
+    originalContent = await readFile(skill.skillMdPath, "utf-8");
+    const updatedContent = addRequires(originalContent, depId);
+    await writeFile(skill.skillMdPath, updatedContent, "utf-8");
+    console.log(`Added ${depId} to ${skillId} requires[]`);
   }
-
-  const proposedSkills = skills.map((currentSkill) =>
-    currentSkill.id === skillId
-      ? {
-          ...currentSkill,
-          requires: [...currentSkill.requires, depId].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)),
-        }
-      : currentSkill
-  );
-  exitOnValidationErrors(validateSkills(proposedSkills), `update ${skillId}`);
-
-  const originalContent = await readFile(skill.skillMdPath, "utf-8");
-  const updatedContent = addRequires(originalContent, depId);
-  await writeFile(skill.skillMdPath, updatedContent, "utf-8");
-  console.log(`Added ${depId} to ${skillId} requires[]`);
 
   console.log("Re-generating skill.lock...");
   try {
@@ -62,13 +64,17 @@ export async function addCommand(skillId: string, options: AddOptions): Promise<
     }
     const result = validateSkills(freshSkills);
     if (!result.valid) {
-      await writeFile(skill.skillMdPath, originalContent, "utf-8");
+      if (originalContent !== null) {
+        await writeFile(skill.skillMdPath, originalContent, "utf-8");
+      }
       exitOnValidationErrors(result, "write skill.lock");
     }
     const lockfile = await generateLockfile(freshSkills, root);
     await writeLockfile(lockfile, root);
   } catch (error) {
-    await writeFile(skill.skillMdPath, originalContent, "utf-8");
+    if (originalContent !== null) {
+      await writeFile(skill.skillMdPath, originalContent, "utf-8");
+    }
     throw error;
   }
   console.log("✓ skill.lock updated");

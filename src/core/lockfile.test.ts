@@ -82,7 +82,7 @@ describe("lockfile", () => {
             alpha: {
               id: "wrong",
               path: "alpha",
-              hash: "aaaaaaaaaaaaaaaa",
+              hash: "sha256:" + "a".repeat(64),
               requires: [],
             },
           },
@@ -167,6 +167,6 @@ describe("lockfile", () => {
   it("matches the committed hello example hash (cross-platform stable)", async () => {
     const helloDir = path.join(fileURLToPath(import.meta.url), "../../../examples/basic/skills/hello");
     const hash = await hashSkillDirectory(helloDir);
-    expect(hash).toBe("6a6b1c94891a6d40");
+    expect(hash).toBe("sha256:6a6b1c94891a6d40014c90d2307ad025c13d91415a0b9553506c75bbf2927b06");
   });
 });

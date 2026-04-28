@@ -4,14 +4,14 @@
     "citation-formatter": {
       "id": "citation-formatter",
       "path": "citation-formatter",
-      "hash": "8af4afdb5af6f9b4",
+      "hash": "sha256:8af4afdb5af6f9b442a7ce0a311da4866fa6a13382e491551efc2be7b46f1f77",
       "requires": [],
       "version": "0.3.0"
     },
     "fetch-content": {
       "id": "fetch-content",
       "path": "research-report/skills/summarize/skills/fetch-content",
-      "hash": "743bf48cafb4c550",
+      "hash": "sha256:743bf48cafb4c5500d0e27300079ca3007afbb356948354f38bfbe86b929a33a",
       "requires": [],
       "version": "0.1.0",
       "parent": "summarize"
@@ -19,7 +19,7 @@
     "format-output": {
       "id": "format-output",
       "path": "research-report/skills/summarize/skills/format-output",
-      "hash": "49952016c64fc625",
+      "hash": "sha256:49952016c64fc625df12a6caaee84f969aab45ec8a0c5f75363d389e41eace70",
       "requires": [],
       "version": "0.1.0",
       "parent": "summarize"
@@ -27,14 +27,14 @@
     "hello": {
       "id": "hello",
       "path": "hello",
-      "hash": "6a6b1c94891a6d40",
+      "hash": "sha256:6a6b1c94891a6d40014c90d2307ad025c13d91415a0b9553506c75bbf2927b06",
       "requires": [],
       "version": "0.1.0"
     },
     "research-report": {
       "id": "research-report",
       "path": "research-report",
-      "hash": "1e0d58ac7715f244",
+      "hash": "sha256:1e0d58ac7715f244ca737f0bc83afa7f38e59309002d4729e7fe54a942d6824c",
       "requires": [
         "citation-formatter"
       ],
@@ -43,7 +43,7 @@
     "summarize": {
       "id": "summarize",
       "path": "research-report/skills/summarize",
-      "hash": "ea39249334961f46",
+      "hash": "sha256:ea39249334961f46230aeddadd9cc0de5c33eb568cf70263dfecc9b4bf7b2af1",
       "requires": [],
       "version": "0.2.0",
       "parent": "research-report"

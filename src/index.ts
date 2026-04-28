@@ -6,5 +6,6 @@ export * from "./core/lockfile.js";
 export * from "./core/mermaid.js";
 export * from "./core/tree.js";
 export * from "./core/export.js";
+export * from "./core/lint-skills.js";
 export * from "./schema/skill.schema.js";
 export * from "./schema/lock.schema.js";

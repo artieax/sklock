@@ -10,7 +10,8 @@ export function toMermaid(graph: Graph): string {
   for (const edge of graph.edges) {
     connectedNodes.add(edge.from);
     connectedNodes.add(edge.to);
-    lines.push(`  ${q(edge.from)} --> ${q(edge.to)}`);
+    const arrow = edge.type === "contains" ? "-.->" : "-->";
+    lines.push(`  ${q(edge.from)} ${arrow} ${q(edge.to)}`);
   }
 
   for (const node of graph.nodes) {

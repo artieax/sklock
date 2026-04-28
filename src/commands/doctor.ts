@@ -1,15 +1,10 @@
-import { readFile } from "fs/promises";
 import { scanSkills } from "../core/scanner.js";
 import { validateSkills } from "../core/validator.js";
 import { generateLockfile, readLockfile } from "../core/lockfile.js";
+import { lintSkills, DEFAULT_MAX_LINES } from "../core/lint-skills.js";
 import { resolveWorkspaceRoot } from "./shared.js";
 import type { ValidationError } from "../core/validator.js";
-
-interface LintIssue {
-  skillId: string;
-  level: "warn" | "error";
-  message: string;
-}
+import type { LintIssue } from "../core/lint-skills.js";
 
 interface LockfileStatus {
   exists: boolean;
@@ -39,8 +34,6 @@ function stableStringify(value: unknown): string {
   if (value === undefined) return "undefined";
   return JSON.stringify(value);
 }
-
-const DEFAULT_MAX_LINES = 200;
 
 interface DoctorOptions {
   root?: string;
@@ -86,23 +79,7 @@ export async function doctorCommand(options: DoctorOptions): Promise<void> {
     };
   }
 
-  const lintIssues: LintIssue[] = [];
-  for (const skill of skills) {
-    const content = await readFile(skill.skillMdPath, "utf-8");
-    const lineCount = content.split("\n").length;
-    if (lineCount > DEFAULT_MAX_LINES) {
-      lintIssues.push({ skillId: skill.id, level: "warn", message: `SKILL.md is ${lineCount} lines — consider splitting` });
-    }
-    if (!skill.description) {
-      lintIssues.push({ skillId: skill.id, level: "warn", message: "No description in frontmatter" });
-    }
-    if (!skill.version) {
-      lintIssues.push({ skillId: skill.id, level: "warn", message: "No version in frontmatter" });
-    }
-    if (!/^#\s+.+$/m.test(content)) {
-      lintIssues.push({ skillId: skill.id, level: "warn", message: "No top-level heading (# ...) in SKILL.md body" });
-    }
-  }
+  const lintIssues = await lintSkills(skills, { maxLines: DEFAULT_MAX_LINES });
 
   const healthy =
     validation.errors.length === 0 &&

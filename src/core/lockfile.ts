@@ -58,7 +58,8 @@ const TEXT_FILENAMES = new Set([
 ]);
 
 function lockRelativePath(root: string, skillPath: string): string {
-  return path.relative(root, skillPath).split(path.sep).join("/");
+  const rel = path.relative(root, skillPath).split(path.sep).join("/");
+  return rel || ".";
 }
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
@@ -106,20 +107,35 @@ async function readFilesWithConcurrency(files: string[], concurrency: number): P
   return results;
 }
 
+async function readSklockIgnore(skillPath: string): Promise<string[]> {
+  const ignorePath = path.join(skillPath, ".sklockignore");
+  try {
+    const content = await readFile(ignorePath, "utf-8");
+    return content
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith("#"));
+  } catch {
+    return [];
+  }
+}
+
 /**
  * Stable hash of everything under the skill directory (SKILL.md plus scripts,
  * references, assets, etc.). Paths are normalized to forward slashes.
- * Digest is truncated to 16 hex characters (64 bits) — enough for change detection.
+ * Respects .sklockignore patterns (gitignore-style) in the skill directory.
+ * Returns a full SHA-256 digest prefixed with "sha256:".
  */
 export async function hashSkillDirectory(skillPath: string): Promise<string> {
   const resolvedRoot = path.resolve(skillPath);
+  const extraIgnore = await readSklockIgnore(resolvedRoot);
   const files = (
     await fg("**/*", {
       cwd: resolvedRoot,
       absolute: true,
       onlyFiles: true,
       followSymbolicLinks: false,
-      ignore: ["**/node_modules/**", "**/.git/**", "skill.lock"],
+      ignore: ["**/node_modules/**", "**/.git/**", "skill.lock", ...extraIgnore],
       dot: true,
     })
   )
@@ -142,7 +158,7 @@ export async function hashSkillDirectory(skillPath: string): Promise<string> {
     h.update(`\0x${input.executableBits.toString(8)}\0${buf.length}:`);
     h.update(buf);
   }
-  return h.digest("hex").slice(0, 16);
+  return `sha256:${h.digest("hex")}`;
 }
 
 export async function generateLockfile(

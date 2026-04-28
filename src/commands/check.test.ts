@@ -115,7 +115,7 @@ describe("checkCommand", () => {
     log.mockClear();
     const lockPath = path.join(root, "skill.lock");
     const lockfile = JSON.parse(await readFile(lockPath, "utf-8"));
-    lockfile.skills.hello.hash = "changed";
+    lockfile.skills.hello.hash = "sha256:" + "0".repeat(64);
     await writeFile(lockPath, JSON.stringify(lockfile, null, 2), "utf-8");
 
     const exit = vi.spyOn(process, "exit").mockImplementation((code?: string | number | null) => {
@@ -134,7 +134,7 @@ describe("checkCommand", () => {
     await lockCommand({ root, json: true });
     const lockPath = path.join(root, "skill.lock");
     const lockfile = JSON.parse(await readFile(lockPath, "utf-8"));
-    lockfile.skills.hello.hash = "changed";
+    lockfile.skills.hello.hash = "sha256:" + "0".repeat(64);
     await writeFile(lockPath, JSON.stringify(lockfile, null, 2), "utf-8");
 
     vi.spyOn(process, "exit").mockImplementation((code?: string | number | null) => {
