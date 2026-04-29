@@ -17,6 +17,7 @@ import { exportCommand } from "./commands/export.js";
 import { lintCommand, DEFAULT_MAX_LINES } from "./commands/lint.js";
 import { addCommand } from "./commands/add.js";
 import { doctorCommand } from "./commands/doctor.js";
+import { suggestRequiresCommand } from "./commands/suggest-requires.js";
 import { runCommand } from "./commands/shared.js";
 
 function readPackageVersion(): string {
@@ -164,6 +165,14 @@ export function createSklockCli(): CAC {
     .option("--json", "Output as JSON")
     .action((options) => {
       runCommand(() => doctorCommand(options));
+    });
+
+  cli
+    .command("suggest-requires", "Suggest missing requires: entries based on cross-references")
+    .option("--root <path>", "Path to skills directory")
+    .option("--json", "Output as JSON")
+    .action((options) => {
+      runCommand(() => suggestRequiresCommand(options));
     });
 
   cli.help();
