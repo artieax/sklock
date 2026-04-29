@@ -44,6 +44,19 @@ bunx github:artieax/sklock --help
 
 ## Quickstart
 
+### For agents (first-time setup)
+
+Install sklock and use the **`sklock/initialize` skill** — it scaffolds the workspace, runs static inference, and does a semantic pass to wire up `requires[]`.
+
+```bash
+npm install -g github:artieax/sklock   # or pnpm / bun
+sklock --version
+```
+
+> **Why the initialize skill, not just `sklock infer`?** `sklock infer` uses static analysis (file-level cross-references). On a fresh workspace, skills have no `requires[]` yet and no cross-file references between them, so it will always return nothing. The `sklock/initialize` skill prompts the agent to read each skill's description and reason about dependencies semantically — the only reliable approach at initialization time.
+
+### Manual / ongoing use
+
 ```bash
 # Scaffold a skills workspace with example skills
 sklock init --example
@@ -59,8 +72,6 @@ sklock check
 sklock check --frozen
 
 # Infer requires[] from file-level cross-references (static analysis only)
-# Note: on a fresh workspace with no requires[] yet, this will find nothing.
-# Use the sklock/initialize skill for semantic inference on first setup.
 sklock infer
 sklock infer --apply
 
@@ -186,16 +197,7 @@ Tags: research, output
 
 ## Agent installation guide
 
-Install sklock with whichever package manager the project uses:
-
-```bash
-npm install -g github:artieax/sklock   # or pnpm / bun
-sklock --version
-```
-
-Then use the **`sklock/initialize` skill** — it walks through the full setup: scaffolding the workspace, running static inference (`sklock infer`), doing a semantic pass to wire up `requires[]`, and verifying the result. The skill works with any AI provider.
-
-> **Why the initialize skill matters for first-time setup:** `sklock infer` uses static analysis (file-level cross-references). On a fresh workspace, skills have no `requires[]` yet and typically no cross-file references between them, so `sklock infer` will always return nothing. The `sklock/initialize` skill prompts you — the agent — to read each skill's description and reason about dependencies semantically, which is the only reliable approach at initialization time.
+See [Quickstart → For agents](#for-agents-first-time-setup) above.
 
 For ongoing work after the workspace is established:
 
