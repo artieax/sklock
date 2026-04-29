@@ -58,6 +58,10 @@ sklock lock
 sklock check
 sklock check --frozen
 
+# Infer requires[] from skill descriptions (uses claude CLI; --apply writes to SKILL.md)
+sklock infer
+sklock infer --apply
+
 # Visualize the dependency graph
 sklock graph --mermaid
 
@@ -173,6 +177,7 @@ Tags: research, output
 | `export` | Export graph as JSON / YAML / Mermaid |
 | `lint` | Report quality issues in `SKILL.md` files |
 | `add <id> --dep <dep>` | Add a dependency to a skill and refresh `skill.lock` |
+| `infer` | Infer `requires[]` from skill descriptions (`--apply` writes to `SKILL.md`) |
 | `doctor` | Run full workspace health check: validation, lockfile drift, and lint summary |
 
 `sklock add` updates YAML frontmatter using a document-aware parser so comments and layout are preserved when possible; if parsing fails, it falls back to rewriting the frontmatter block.
@@ -206,6 +211,22 @@ Run from the project root. This creates `skills/` if it does not exist:
 ```bash
 sklock init --root skills
 ```
+
+When `sklock init` detects existing skills with no `requires[]` declared, it automatically runs `sklock infer --apply` to detect file-level cross-references. Pass `--no-infer` to skip this step.
+
+### Step 2a — Infer dependencies (automatic during init, or run standalone)
+
+`sklock infer` uses static file analysis to detect dependencies — it scans each skill's files for explicit references to other skills (import statements, path patterns, `<!-- READ: -->` directives). No API key required.
+
+```bash
+# Preview suggestions without writing
+sklock infer
+
+# Apply inferred requires[] to SKILL.md files and regenerate skill.lock
+sklock infer --apply
+```
+
+For **semantic inference** (reasoning about skill descriptions to find implicit relationships), use the `sklock/initialize` skill with your AI agent — it guides any AI through a systematic semantic pass and is provider-agnostic.
 
 ### Step 3 — Create a skill
 
