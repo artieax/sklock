@@ -39,9 +39,16 @@ export interface OrphanParentWarning {
   message: string;
 }
 
+export interface ScanParseError {
+  code: "parse_error";
+  file: string;
+  message: string;
+}
+
 export interface ScanResult {
   skills: DiscoveredSkill[];
   warnings: OrphanParentWarning[];
+  errors: ScanParseError[];
 }
 
 function parseFrontmatter(content: string): { data: Record<string, unknown>; body: string } {
@@ -80,6 +87,7 @@ export async function scanSkills(root: string): Promise<ScanResult> {
   const contents = await Promise.all(files.map((file) => readFile(file, "utf-8")));
 
   const skills: Array<DiscoveredSkill & { parentDir?: string }> = [];
+  const errors: ScanParseError[] = [];
   for (let i = 0; i < files.length; i++) {
     const file = files[i]!;
     const content = contents[i]!;
@@ -87,10 +95,12 @@ export async function scanSkills(root: string): Promise<ScanResult> {
     try {
       ({ data } = parseFrontmatter(content));
     } catch (error) {
-      throw new SkillScanError(
-        `Invalid YAML frontmatter in ${file}: ${error instanceof Error ? error.message : String(error)}`,
-        file
-      );
+      errors.push({
+        code: "parse_error",
+        file,
+        message: `Invalid YAML frontmatter in ${file}: ${error instanceof Error ? error.message : String(error)}`,
+      });
+      continue;
     }
 
     const skillDir = path.dirname(file);
@@ -101,13 +111,20 @@ export async function scanSkills(root: string): Promise<ScanResult> {
       const details = parsed.error.issues
         .map((issue) => `${issue.path.join(".") || "frontmatter"}: ${issue.message}`)
         .join("; ");
-      throw new SkillScanError(`Invalid SKILL.md at ${file}: ${details}`, file);
+      errors.push({
+        code: "parse_error",
+        file,
+        message: `Invalid SKILL.md at ${file}: ${details}`,
+      });
+      continue;
     }
     if (parsed.data.name !== dirName) {
-      throw new SkillScanError(
-        `Invalid SKILL.md at ${file}: name must match parent directory (${dirName})`,
-        file
-      );
+      errors.push({
+        code: "parse_error",
+        file,
+        message: `Invalid SKILL.md at ${file}: name must match parent directory (${dirName})`,
+      });
+      continue;
     }
 
     skills.push({
@@ -151,5 +168,5 @@ export async function scanSkills(root: string): Promise<ScanResult> {
     }
   }
 
-  return { skills: resolved, warnings };
+  return { skills: resolved, warnings, errors };
 }

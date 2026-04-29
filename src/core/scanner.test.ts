@@ -2,7 +2,7 @@ import { mkdtemp, writeFile, mkdir } from "fs/promises";
 import { tmpdir } from "os";
 import path from "path";
 import { describe, expect, it } from "vitest";
-import { scanSkills, SkillScanError } from "./scanner.js";
+import { scanSkills } from "./scanner.js";
 import { validateSkills } from "./validator.js";
 import { generateLockfile } from "./lockfile.js";
 
@@ -76,11 +76,15 @@ describe("scanSkills", () => {
     expect(skills[0]?.description).toBeUndefined();
   });
 
-  it("fails when a SKILL.md has invalid frontmatter fields", async () => {
+  it("collects errors when a SKILL.md has invalid frontmatter fields", async () => {
     const root = await makeRoot();
     await writeSkill(root, "bad", "name: bad\ndescription: Bad test skill\nrequires: not-an-array");
 
-    await expect(scanSkills(root)).rejects.toBeInstanceOf(SkillScanError);
+    const { skills, errors } = await scanSkills(root);
+    expect(skills).toHaveLength(0);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.code).toBe("parse_error");
+    expect(errors[0]?.file).toContain("bad");
   });
 
   it("allows Claude Code / ecosystem extension frontmatter keys", async () => {
@@ -102,11 +106,14 @@ describe("scanSkills", () => {
     expect(skills[0]?.id).toBe("ext-skill");
   });
 
-  it("requires the Agent Skills name to match the directory", async () => {
+  it("collects an error when the Agent Skills name does not match the directory", async () => {
     const root = await makeRoot();
     await writeSkill(root, "actual-name", "name: other-name\ndescription: Bad test skill");
 
-    await expect(scanSkills(root)).rejects.toThrow("name must match parent directory");
+    const { skills, errors } = await scanSkills(root);
+    expect(skills).toHaveLength(0);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.message).toMatch("name must match parent directory");
   });
 
   it("returns an empty warnings list for a consistent workspace", async () => {
