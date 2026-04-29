@@ -4,13 +4,13 @@
     "name": "sklock",
     "version": "0.2.1"
   },
-  "workspaceHash": "sha256:34c3104b942c50bd58bd9b9df80c2f7292a98649af2a3f197ffc8a1b93d81d2e",
+  "workspaceHash": "sha256:a51ab18e0b2653b01dd612aecb4f763b916f4aabc4449c5e0047429c3c53d34e",
   "skills": {
     "initialize": {
       "id": "initialize",
       "path": "initialize",
-      "contentHash": "sha256:2855dbedf12466788636bafc82ba03e2b0349539966d2406c5a1224db73d7d46",
-      "closureHash": "sha256:2855dbedf12466788636bafc82ba03e2b0349539966d2406c5a1224db73d7d46",
+      "contentHash": "sha256:6835f19615efb0df023af4461806c8e179cd59695ef78ab7a2a10807f9bc5a5a",
+      "closureHash": "sha256:6835f19615efb0df023af4461806c8e179cd59695ef78ab7a2a10807f9bc5a5a",
       "requires": [],
       "version": "1.0.0"
     }

@@ -100,10 +100,10 @@ Address any warnings that matter (missing descriptions, oversized files).
 
 ## Step 8 — Document sklock in the project
 
-After the workspace is healthy, record sklock usage in the right place so future
-agents and contributors know to keep the lockfile in sync.
+After the workspace is healthy, record sklock usage in the right place.
+Use the **first** matching tier below and stop — don't write to multiple tiers.
 
-### 8a. Check for a skill-creator skill
+### Priority 1 — skill-creator skill
 
 Look for a skill whose name or description involves creating, scaffolding, or
 building skills (e.g. `skill-builder`, `skill-creator`, `create-skill`):
@@ -116,10 +116,8 @@ Also check installed Claude Code plugins:
 ```
 /plugin list
 ```
-Look for anything matching `skill-builder` or `skill-creator`.
 
-**If a skill-creator skill is found** → open that skill's `SKILL.md` and append
-the following block (adjust the path to match the actual skill):
+**If found** → append to that skill's `SKILL.md`:
 
 ```markdown
 ## sklock integration
@@ -134,25 +132,48 @@ sklock validate && sklock lock
 To view the dependency graph: `sklock tree` or `sklock graph --mermaid`
 ```
 
-### 8b. No skill-creator found — write to the project config
+### Priority 2 — rules directory
 
-Detect which agent config files exist:
+Check for a rules directory used by the agent platform:
+
+```bash
+ls .claude/rules/ ~/.claude/rules/ .cursor/rules/ 2>/dev/null
+```
+
+**If a rules directory exists** → create a new rule file there (e.g.
+`.claude/rules/sklock.md`) scoped to `skills/**`:
+
+```markdown
+---
+description: Keep skill.lock in sync whenever a SKILL.md is edited
+globs: ["skills/**"]
+---
+
+# sklock
+
+Skills are managed with [sklock](https://github.com/artieax/sklock).
+After any `SKILL.md` edit, run:
+
+\`\`\`bash
+sklock validate && sklock lock
+\`\`\`
+
+To view the dependency graph: `sklock tree` or `sklock graph --mermaid`
+```
+
+Use the platform-appropriate directory (`.claude/rules/` for Claude Code,
+`.cursor/rules/` for Cursor, etc.).
+
+### Priority 3 — project-level config (fallback)
+
+Only if neither a skill-creator skill nor a rules directory exists, detect
+which agent config files are present:
 
 ```bash
 ls CLAUDE.md AGENTS.md GEMINI.md 2>/dev/null
 ```
 
-Pick the best match for the project (prefer whichever already exists; create
-none if all are absent — just note it to the user):
-
-| File present | Write there |
-|---|---|
-| `CLAUDE.md` | Append under a `## Skills` or `## sklock` heading |
-| `AGENTS.md` | Same |
-| `GEMINI.md` | Same |
-| Multiple present | Write to **all** of them so every agent sees it |
-
-Append this block (adapt heading style to match the file):
+Append to whichever exist (all of them if multiple):
 
 ```markdown
 ## sklock
@@ -164,6 +185,9 @@ After any `SKILL.md` edit, run:
 sklock validate && sklock lock
 \`\`\`
 ```
+
+If none of the above exist, tell the user no config file was found and show
+the block above for them to paste manually.
 
 ## When to re-run
 
