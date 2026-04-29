@@ -13,6 +13,8 @@ coverage/
 .idea/
 .cursor/
 .specstory/
+.claude/
+.worktrees/
 
 # Temporary files
 .cache/
