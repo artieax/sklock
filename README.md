@@ -58,7 +58,9 @@ sklock lock
 sklock check
 sklock check --frozen
 
-# Infer requires[] from skill descriptions (uses claude CLI; --apply writes to SKILL.md)
+# Infer requires[] from file-level cross-references (static analysis only)
+# Note: on a fresh workspace with no requires[] yet, this will find nothing.
+# Use the sklock/initialize skill for semantic inference on first setup.
 sklock infer
 sklock infer --apply
 
@@ -192,6 +194,8 @@ sklock --version
 ```
 
 Then use the **`sklock/initialize` skill** — it walks through the full setup: scaffolding the workspace, running static inference (`sklock infer`), doing a semantic pass to wire up `requires[]`, and verifying the result. The skill works with any AI provider.
+
+> **Why the initialize skill matters for first-time setup:** `sklock infer` uses static analysis (file-level cross-references). On a fresh workspace, skills have no `requires[]` yet and typically no cross-file references between them, so `sklock infer` will always return nothing. The `sklock/initialize` skill prompts you — the agent — to read each skill's description and reason about dependencies semantically, which is the only reliable approach at initialization time.
 
 For ongoing work after the workspace is established:
 
