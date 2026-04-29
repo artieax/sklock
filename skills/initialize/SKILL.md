@@ -98,6 +98,73 @@ sklock lint
 
 Address any warnings that matter (missing descriptions, oversized files).
 
+## Step 8 — Document sklock in the project
+
+After the workspace is healthy, record sklock usage in the right place so future
+agents and contributors know to keep the lockfile in sync.
+
+### 8a. Check for a skill-creator skill
+
+Look for a skill whose name or description involves creating, scaffolding, or
+building skills (e.g. `skill-builder`, `skill-creator`, `create-skill`):
+
+```bash
+sklock tree | grep -iE "skill.?(builder|creator|create|scaffold|new)"
+```
+
+Also check installed Claude Code plugins:
+```
+/plugin list
+```
+Look for anything matching `skill-builder` or `skill-creator`.
+
+**If a skill-creator skill is found** → open that skill's `SKILL.md` and append
+the following block (adjust the path to match the actual skill):
+
+```markdown
+## sklock integration
+
+This project uses sklock to manage the skill workspace.
+After creating or editing any `SKILL.md`, run:
+
+\`\`\`bash
+sklock validate && sklock lock
+\`\`\`
+
+To view the dependency graph: `sklock tree` or `sklock graph --mermaid`
+```
+
+### 8b. No skill-creator found — write to the project config
+
+Detect which agent config files exist:
+
+```bash
+ls CLAUDE.md AGENTS.md GEMINI.md 2>/dev/null
+```
+
+Pick the best match for the project (prefer whichever already exists; create
+none if all are absent — just note it to the user):
+
+| File present | Write there |
+|---|---|
+| `CLAUDE.md` | Append under a `## Skills` or `## sklock` heading |
+| `AGENTS.md` | Same |
+| `GEMINI.md` | Same |
+| Multiple present | Write to **all** of them so every agent sees it |
+
+Append this block (adapt heading style to match the file):
+
+```markdown
+## sklock
+
+Skills are managed with [sklock](https://github.com/artieax/sklock).
+After any `SKILL.md` edit, run:
+
+\`\`\`bash
+sklock validate && sklock lock
+\`\`\`
+```
+
 ## When to re-run
 
 Re-run `sklock validate && sklock lock` after any change to a `SKILL.md` file.

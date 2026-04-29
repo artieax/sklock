@@ -2,15 +2,15 @@
   "version": "1",
   "generatedBy": {
     "name": "sklock",
-    "version": "0.2.0"
+    "version": "0.2.1"
   },
-  "workspaceHash": "sha256:243549ecc78aa177b3c8194324492068db02bc74360682f9a415c2caab338af1",
+  "workspaceHash": "sha256:34c3104b942c50bd58bd9b9df80c2f7292a98649af2a3f197ffc8a1b93d81d2e",
   "skills": {
     "initialize": {
       "id": "initialize",
       "path": "initialize",
-      "contentHash": "sha256:2314f132d01035aafc537a86cc1da73221f8eb4d3b9068132105091de6cd378e",
-      "closureHash": "sha256:2314f132d01035aafc537a86cc1da73221f8eb4d3b9068132105091de6cd378e",
+      "contentHash": "sha256:2855dbedf12466788636bafc82ba03e2b0349539966d2406c5a1224db73d7d46",
+      "closureHash": "sha256:2855dbedf12466788636bafc82ba03e2b0349539966d2406c5a1224db73d7d46",
       "requires": [],
       "version": "1.0.0"
     }
