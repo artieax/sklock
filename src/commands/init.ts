@@ -1,10 +1,13 @@
 import { mkdir, writeFile, stat } from "fs/promises";
 import path from "path";
 import { resolveWorkspaceRoot } from "./shared.js";
+import { scanSkills } from "../core/scanner.js";
+import { inferCommand } from "./infer.js";
 
 interface InitOptions {
   root?: string;
   example?: boolean;
+  noInfer?: boolean;
 }
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
@@ -169,6 +172,18 @@ export async function initCommand(options: InitOptions): Promise<void> {
     console.log(`Created ${root}`);
   }
 
+  // Infer deps for existing skills (skip for --example, skip if --no-infer)
+  if (!options.example && !options.noInfer) {
+    const { skills } = await scanSkills(root).catch(() => ({ skills: [] }));
+    const unlinked = skills.filter((s) => s.requires.length === 0);
+    if (skills.length > 0 && unlinked.length > 0) {
+      console.log(`\nFound ${skills.length} skill(s). Inferring dependencies…`);
+      await inferCommand({ root, apply: true }).catch((err: unknown) => {
+        console.warn(`  Dependency inference failed: ${err instanceof Error ? err.message : String(err)}`);
+      });
+    }
+  }
+
   if (options.example) {
     const writes = EXAMPLE_SKILLS.map(({ file, content }) => ({
       file: path.join(root, ...file),
@@ -202,5 +217,6 @@ export async function initCommand(options: InitOptions): Promise<void> {
     console.log("  sklock graph --mermaid");
   } else {
     console.log(`\nAdd your first skill under ${root}/<name>/SKILL.md (see README for the minimum frontmatter).`);
+    console.log("Then run: sklock validate && sklock lock");
   }
 }

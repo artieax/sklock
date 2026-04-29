@@ -58,6 +58,10 @@ sklock lock
 sklock check
 sklock check --frozen
 
+# Infer requires[] from skill descriptions (uses claude CLI; --apply writes to SKILL.md)
+sklock infer
+sklock infer --apply
+
 # Visualize the dependency graph
 sklock graph --mermaid
 
@@ -173,99 +177,28 @@ Tags: research, output
 | `export` | Export graph as JSON / YAML / Mermaid |
 | `lint` | Report quality issues in `SKILL.md` files |
 | `add <id> --dep <dep>` | Add a dependency to a skill and refresh `skill.lock` |
+| `infer` | Infer `requires[]` from skill descriptions (`--apply` writes to `SKILL.md`) |
 | `doctor` | Run full workspace health check: validation, lockfile drift, and lint summary |
 
 `sklock add` updates YAML frontmatter using a document-aware parser so comments and layout are preserved when possible; if parsing fails, it falls back to rewriting the frontmatter block.
 
 ## Agent installation guide
 
-> This section is written for AI agents. Follow these steps exactly when setting up sklock in a project.
-
-### Step 1 — Install sklock
-
-Pick whichever package manager is already in use in the project (`npm`, `pnpm`, or `bun`):
+Install sklock with whichever package manager the project uses:
 
 ```bash
-npm install -g github:artieax/sklock
-# or
-pnpm add -g github:artieax/sklock
-# or
-bun add -g github:artieax/sklock
-```
-
-Verify installation:
-
-```bash
+npm install -g github:artieax/sklock   # or pnpm / bun
 sklock --version
 ```
 
-### Step 2 — Initialise the skills directory
+Then use the **`sklock/initialize` skill** — it walks through the full setup: scaffolding the workspace, running static inference (`sklock infer`), doing a semantic pass to wire up `requires[]`, and verifying the result. The skill works with any AI provider.
 
-Run from the project root. This creates `skills/` if it does not exist:
-
-```bash
-sklock init --root skills
-```
-
-### Step 3 — Create a skill
-
-Each skill is a directory containing a `SKILL.md` file. Create it manually:
-
-```
-skills/
-  your-skill-name/
-    SKILL.md
-```
-
-Minimum valid `SKILL.md` (add `description` when you can — `sklock lint` warns if it is missing):
-
-```markdown
----
-name: your-skill-name
-version: "0.1.0"
-requires: []
-tags: []
----
-
-# Your Skill Name
-
-What this skill does and how to use it.
-```
-
-Rules:
-- Prefer omitting `id` — the skill ID is the directory name. If you set `id`, it must equal `name` (sklock rejects a mismatch)
-- `requires` must list existing skill IDs in the workspace
-- Sub-skills go in `skills/<skill-name>/skills/<sub-skill-name>/SKILL.md`
-- If the skill already exists, **do not recreate it** — update its `SKILL.md` frontmatter in place (for example `version`, `requires`, `tags`, `description`)
-- If a `skill-creator` skill exists, embed a short "Uses sklock" section in its documentation describing that changes must be followed by `sklock validate` and `sklock lock`
-
-### Step 4 — Lock and validate
-
-After creating or modifying any skill, always run:
+For ongoing work after the workspace is established:
 
 ```bash
-sklock validate   # check for missing deps and cycles
-sklock lock       # regenerate skill.lock
+sklock validate && sklock lock   # after any SKILL.md change
+sklock infer --apply             # pick up new file-level cross-references
 ```
-
-Commit both the `SKILL.md` files and the updated `skill.lock`.
-
-### Step 5 — Inspect the graph
-
-```bash
-sklock tree                    # nested containment view
-sklock graph --mermaid         # mermaid dependency diagram
-sklock explain <skill-id>      # full details for one skill
-sklock why <skill-id>          # what depends on this skill
-```
-
-### When to re-run `sklock lock`
-
-Re-run `sklock lock` whenever you:
-- Add or remove a skill directory
-- Edit frontmatter in any `SKILL.md` (version, requires, tags, description)
-- Add, change, or remove any other file under a skill directory (`scripts/`, `references/`, `assets/`, etc.) — the lockfile hash tracks the whole directory
-- Move a skill to a different nesting level
 
 ### Troubleshooting
 

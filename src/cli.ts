@@ -17,6 +17,7 @@ import { exportCommand } from "./commands/export.js";
 import { lintCommand, DEFAULT_MAX_LINES } from "./commands/lint.js";
 import { addCommand } from "./commands/add.js";
 import { doctorCommand } from "./commands/doctor.js";
+import { inferCommand } from "./commands/infer.js";
 import { runCommand } from "./commands/shared.js";
 
 function readPackageVersion(): string {
@@ -46,6 +47,7 @@ export function createSklockCli(): CAC {
     .command("init", "Initialize a skills workspace")
     .option("--root <path>", "Path to skills directory")
     .option("--example", "Include example skill")
+    .option("--no-infer", "Skip automatic dependency inference for existing skills")
     .action((options) => {
       runCommand(() => initCommand(options));
     });
@@ -164,6 +166,15 @@ export function createSklockCli(): CAC {
     .option("--json", "Output as JSON")
     .action((options) => {
       runCommand(() => doctorCommand(options));
+    });
+
+  cli
+    .command("infer", "Infer requires[] from file cross-references (static analysis)")
+    .option("--root <path>", "Path to skills directory")
+    .option("--apply", "Write inferred dependencies to SKILL.md files and regenerate skill.lock")
+    .option("--quiet", "Suppress progress output")
+    .action((options) => {
+      runCommand(() => inferCommand(options).then(() => undefined));
     });
 
   cli.help();
