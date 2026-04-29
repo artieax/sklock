@@ -57,21 +57,37 @@ suggestions look correct:
 sklock infer --apply
 ```
 
-### 4b. Semantic pass — read every skill and reason about relationships
+Static analysis only finds dependencies that are **textually expressed** in
+files. Fresh workspaces with no file-level cross-references will return
+"No new dependencies inferred" — that is expected. Proceed to Step 4b.
 
-Read each skill's `SKILL.md`. For every pair (A, B), ask:
-- Does A describe a workflow that *produces* what B describes?
-- Does A's description mention B's domain or outputs?
-- Would A fail or produce worse results without B?
+### 4b. Semantic pass — LLM-driven scan
 
-If yes → add the dependency:
+Because skills initially have no `requires[]` and may not reference each other
+in file contents, static analysis cannot detect semantic dependencies. You must
+reason about them yourself.
+
+First, get structured context for all skills:
 
 ```bash
-sklock add <skill-a> --dep <skill-b>
+sklock infer --llm-context
 ```
 
-Do not add dependencies based on loose thematic similarity — only add them when
-skill A genuinely requires skill B to function.
+Read the output. For every ordered pair (A, B) of distinct skills, ask:
+
+1. Does A's workflow **produce or consume** what B provides?
+2. Does A's description mention B's domain, outputs, or capabilities?
+3. Would A **fail or produce meaningfully worse results** without B?
+4. Does A explicitly orchestrate or delegate a subtask to B?
+
+If any answer is yes → add the dependency:
+
+```bash
+sklock add <A> --dep <B>
+```
+
+**Do not** add dependencies based on loose thematic similarity alone. Only add
+them when skill A genuinely cannot do its job without skill B.
 
 ## Step 5 — Lock and verify
 

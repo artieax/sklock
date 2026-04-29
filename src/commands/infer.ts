@@ -10,6 +10,7 @@ export interface InferOptions {
   root?: string;
   apply?: boolean;
   quiet?: boolean;
+  llmContext?: boolean;
 }
 
 export interface SuggestedDep {
@@ -45,6 +46,29 @@ function filterExisting(
     .filter((sug) => sug.requires.length > 0);
 }
 
+function formatLlmContext(skills: DiscoveredSkill[]): string {
+  const lines: string[] = [
+    "# sklock: semantic dependency context",
+    "# Static analysis found no file-level cross-references.",
+    "# Read each skill description and decide: does skill A require skill B?",
+    "# Confirm with:  sklock add <A> --dep <B>",
+    "",
+    "skills:",
+  ];
+  for (const s of skills) {
+    lines.push(`  ${s.id}:`);
+    lines.push(`    description: ${JSON.stringify(s.description ?? "(none)")}`);
+    lines.push(`    requires: [${s.requires.join(", ")}]`);
+  }
+  lines.push("");
+  lines.push("# For each ordered pair (A, B), add a dependency when:");
+  lines.push("#   - A's workflow produces or consumes what B provides");
+  lines.push("#   - A would fail or degrade meaningfully without B");
+  lines.push("#   - A explicitly orchestrates or delegates to B");
+  lines.push("# Skip pairs that share a theme but have no functional dependency.");
+  return lines.join("\n");
+}
+
 export async function inferCommand(options: InferOptions): Promise<SuggestedDep[]> {
   const root = resolveWorkspaceRoot(options.root);
   const { skills, warnings } = await scanSkills(root);
@@ -55,11 +79,19 @@ export async function inferCommand(options: InferOptions): Promise<SuggestedDep[
     return [];
   }
 
+  if (options.llmContext) {
+    console.log(formatLlmContext(skills));
+    return [];
+  }
+
   const raw = await inferWithStaticAnalysis(root);
   const suggestions = filterExisting(raw, skills);
 
   if (suggestions.length === 0) {
-    if (!options.quiet) console.log("No new dependencies inferred.");
+    if (!options.quiet) {
+      console.log("No new dependencies inferred (static analysis).");
+      console.log("For semantic inference, run: sklock infer --llm-context");
+    }
     return [];
   }
 

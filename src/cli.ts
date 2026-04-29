@@ -173,6 +173,10 @@ export function createSklockCli(): CAC {
     .option("--root <path>", "Path to skills directory")
     .option("--apply", "Write inferred dependencies to SKILL.md files and regenerate skill.lock")
     .option("--quiet", "Suppress progress output")
+    .option(
+      "--llm-context",
+      "Print all skill descriptions as structured context for LLM semantic analysis instead of running static analysis"
+    )
     .action((options) => {
       runCommand(() => inferCommand(options).then(() => undefined));
     });
