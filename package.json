@@ -1,6 +1,6 @@
 {
   "name": "sklock",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A lockfile and graph manager for recursive AI agent skills.",
   "type": "module",
   "main": "./dist/index.js",
@@ -33,10 +33,13 @@
   "files": [
     "dist",
     "schemas",
+    "skills",
+    "scripts/post-install.mjs",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
+    "postinstall": "node scripts/post-install.mjs",
     "build": "tsup src/cli.ts src/index.ts --format esm --dts --clean",
     "json-schema": "tsx scripts/generate-skill-json-schema.ts",
     "prepublishOnly": "npm run check && npm test && npm run build && npm run json-schema",
