@@ -2,7 +2,6 @@
 name: initialize
 version: "1.0.0"
 description: Initialize a sklock workspace in a project — install sklock, scaffold the skills directory, infer requires[] dependencies from skill descriptions, generate skill.lock, and verify the workspace is healthy. Use when setting up sklock for the first time or onboarding a project that already has skills.
-tags: [sklock, setup, initialization]
 ---
 
 # Initialize a sklock workspace
